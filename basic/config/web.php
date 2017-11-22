@@ -43,14 +43,21 @@ $config = [
             ],
         ],
         'db' => $db,
-        /*
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
             ],
         ],
-        */
+        'authManager' => [
+            'class' => 'yii\rbac\DbManager',
+        ],
+
+    ],
+    'modules' => [
+        'user' => [
+            'class' => 'dektrium\user\Module',
+        ],
     ],
     'params' => $params,
 ];
