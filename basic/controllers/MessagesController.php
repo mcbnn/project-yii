@@ -89,6 +89,7 @@ class MessagesController extends Controller
     {
         $model = new Messages();
         $model->user_id = Yii::$app->getUser()->getId();
+        $model->status_id = 1;
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);

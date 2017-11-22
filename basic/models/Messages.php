@@ -11,7 +11,9 @@ use Yii;
  * @property string $title
  * @property string $text
  * @property integer $user_id
+ * @property integer $status_id
  *
+ * @property Status $status
  * @property User $user
  */
 class Messages extends \yii\db\ActiveRecord
@@ -30,10 +32,11 @@ class Messages extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['title', 'user_id'], 'required'],
+            [['title', 'user_id', 'status_id'], 'required'],
             [['text'], 'string'],
-            [['user_id'], 'integer'],
+            [['user_id', 'status_id'], 'integer'],
             [['title'], 'string', 'max' => 255],
+            [['status_id'], 'exist', 'skipOnError' => true, 'targetClass' => Status::className(), 'targetAttribute' => ['status_id' => 'id']],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
         ];
     }
@@ -48,7 +51,16 @@ class Messages extends \yii\db\ActiveRecord
             'title' => 'Title',
             'text' => 'Text',
             'user_id' => 'User ID',
+            'status_id' => 'Status ID',
         ];
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getStatus()
+    {
+        return $this->hasOne(Status::className(), ['id' => 'status_id']);
     }
 
     /**

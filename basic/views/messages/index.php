@@ -24,6 +24,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'title',
             'text:ntext',
             'user.username',
+            'status.name',
             [
                 'class' => 'yii\grid\ActionColumn',
                 'header'=>'Действия',

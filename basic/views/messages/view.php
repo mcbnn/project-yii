@@ -21,6 +21,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'title',
             'text:ntext',
             'user_id',
+            'status.name',
         ],
     ]) ?>
 
