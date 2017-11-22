@@ -20,13 +20,16 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-
             'id',
             'title',
             'text:ntext',
-            'user_id',
-
-            ['class' => 'yii\grid\ActionColumn'],
+            'user.username',
+            [
+                'class' => 'yii\grid\ActionColumn',
+                'header'=>'Действия',
+                'headerOptions' => ['width' => '80'],
+                'template' => '{view}',
+            ],
         ],
     ]); ?>
 </div>

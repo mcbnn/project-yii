@@ -7,7 +7,7 @@ use app\models\Messages;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
 
 /**
  * MessagesController implements the CRUD actions for Messages model.
@@ -19,14 +19,21 @@ class MessagesController extends Controller
      */
     public function behaviors()
     {
+
         return [
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'delete' => ['POST'],
+            'access' => [
+                'class' => AccessControl::className(),
+                'only' => ['create', 'index'],
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'actions' => ['create', 'index'],
+                        'roles' => ['@'],
+                    ],
                 ],
             ],
         ];
+
     }
 
     /**
@@ -35,9 +42,26 @@ class MessagesController extends Controller
      */
     public function actionIndex()
     {
-        $dataProvider = new ActiveDataProvider([
-            'query' => Messages::find(),
-        ]);
+
+        $user_id = Yii::$app->getUser()->getId();
+        $role = Yii::$app->authManager->getRolesByUser($user_id);
+
+        if(!$this->getAccessMessage()){
+
+            return $this->redirect('/site/index');
+        }
+
+
+        if(isset($role['admin'])){
+            $dataProvider = new ActiveDataProvider([
+                'query' => Messages::find(),
+            ]);
+        }
+        else{
+            $dataProvider = new ActiveDataProvider([
+                'query' => Messages::find()->where('user_id = :user_id', ['user_id' => $user_id]),
+            ]);
+        }
 
         return $this->render('index', [
             'dataProvider' => $dataProvider,
@@ -121,5 +145,29 @@ class MessagesController extends Controller
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
+    }
+
+    /**
+    * @param int $id
+    * @return bool
+    */
+    protected function getAccessMessage($id = 0)
+    {
+        $user_id = Yii::$app->getUser()->getId();
+        $isGuest = Yii::$app->getUser()->isGuest;
+        $role = Yii::$app->authManager->getRolesByUser($user_id);
+
+        if(!$id){
+            $user_id_messages = 0;
+        }
+        else{
+            $model = $this->findModel($id);
+            $user_id_messages = $model->user_id;
+        }
+
+        if(isset($role['admin']))return true;
+        if($user_id == $user_id_messages)return true;
+        if(!$isGuest and $id == 0)return true;
+        return false;
     }
 }
