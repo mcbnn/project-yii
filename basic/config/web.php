@@ -19,10 +19,10 @@ $config = [
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],
-        'user' => [
-            'identityClass' => 'app\models\User',
-            'enableAutoLogin' => true,
-        ],
+//        'user' => [
+//            'identityClass' => 'app\models\User',
+//            'enableAutoLogin' => true,
+//        ],
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
@@ -49,6 +49,15 @@ $config = [
             'rules' => [
             ],
         ],
+        'urlManager' => [
+            'enablePrettyUrl' => true,
+            'showScriptName' => false,
+            'rules' => [
+                'gii'=>'gii',
+                'gii/<controller:\w+>'=>'gii/<controller>',
+                'gii/<controller:\w+>/<action:\w+>'=>'gii/<controller>/<action>',
+            ],
+        ],
         'authManager' => [
             'class' => 'yii\rbac\DbManager',
         ],
@@ -56,7 +65,20 @@ $config = [
     ],
     'modules' => [
         'user' => [
-            'class' => 'dektrium\user\Module',
+            'class' => \dektrium\user\Module::className(),
+            'enableConfirmation' => false,
+            'controllerMap' => [
+                'registration' => [
+                    'class' => 'app\controllers\_RegistrationController',
+                    'on ' . \dektrium\user\controllers\RegistrationController::EVENT_AFTER_REGISTER => function ($e) {
+                        $auth = Yii::$app->authManager;
+                        $roleName = ($e->form->roles == '0')?'admin':'author';
+                        $role = $auth->getRole($roleName);
+                        $user = \dektrium\user\models\User::findOne(['username' => $e->form->username]);
+                        $auth->assign($role, $user->id);
+                    }
+                ],
+            ],
         ],
     ],
     'params' => $params,
