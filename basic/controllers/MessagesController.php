@@ -4,6 +4,8 @@ namespace app\controllers;
 
 use Yii;
 use app\models\Messages;
+use app\models\Answers;
+use app\models\Status;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -75,8 +77,33 @@ class MessagesController extends Controller
      */
     public function actionView($id)
     {
+        if(!$this->getAccessMessage($id)){
+            return $this->redirect('/site/index');
+        }
+
+        $modelMessage = $this->findModel($id);
+
+        $modelAnswer = new Answers();
+
+        $modelAnswer->user_id = Yii::$app->getUser()->getId();
+        $modelAnswer->message_id = $id;
+
+        if ($modelAnswer->load(Yii::$app->request->post()) && $modelAnswer->save()) {
+            $status = Yii::$app->request->post();
+            if(isset($status['status'])){
+                $message = Messages::findOne(['id' => $id]);
+                $message->status_id = $status['status'];
+                $message->save();
+            }
+            return $this->redirect(['messages/view', 'id' => $id]);
+        }
+
+        $answers = Answers::findAll(['message_id' => $id]);
+
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'modelMessage'  => $modelMessage,
+            'modelAnswer'   => $modelAnswer,
+            'answers'       => $answers
         ]);
     }
 
@@ -90,7 +117,6 @@ class MessagesController extends Controller
         $model = new Messages();
         $model->user_id = Yii::$app->getUser()->getId();
         $model->status_id = 1;
-
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
@@ -170,5 +196,17 @@ class MessagesController extends Controller
         if($user_id == $user_id_messages)return true;
         if(!$isGuest and $id == 0)return true;
         return false;
+    }
+
+
+    public function getAllStatus()
+    {
+        $statusObj = Status::find()->all();
+        $statusArray = [];
+        foreach ($statusObj as $value){
+            $statusArray[$value->id] = $value->name;
+        }
+
+        return $statusArray;
     }
 }

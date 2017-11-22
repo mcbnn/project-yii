@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use app\models\RegistrationForm;
+use app\models\Status;
 use yii\web\NotFoundHttpException;
 use dektrium\user\controllers\RegistrationController;
 use Yii;
@@ -47,6 +48,9 @@ class _RegistrationController extends RegistrationController{
         ]);
     }
 
+    /**
+     * @return array
+     */
     public function getAllArrayRoles()
     {
         $rolesObj = Yii::$app->authManager->getRoles();
