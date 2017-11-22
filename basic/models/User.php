@@ -22,9 +22,6 @@ use Yii;
  * @property integer $last_login_at
  *
  * @property Messages[] $messages
- * @property Profile $profile
- * @property SocialAccount[] $socialAccounts
- * @property Token[] $tokens
  */
 class User extends \yii\db\ActiveRecord
 {
@@ -83,27 +80,4 @@ class User extends \yii\db\ActiveRecord
         return $this->hasMany(Messages::className(), ['user_id' => 'id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getProfile()
-    {
-        return $this->hasOne(Profile::className(), ['user_id' => 'id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getSocialAccounts()
-    {
-        return $this->hasMany(SocialAccount::className(), ['user_id' => 'id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getTokens()
-    {
-        return $this->hasMany(Token::className(), ['user_id' => 'id']);
-    }
 }

@@ -3,7 +3,8 @@
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
-/* @var $modelAnswer app\models\Answer */
+/* @var $modelAnswer app\models\Answers */
+/* @var $modelMessage app\models\Messages */
 
 $this->title = $modelMessage->title;
 $this->params['breadcrumbs'][] = ['label' => 'Messages', 'url' => ['index']];
