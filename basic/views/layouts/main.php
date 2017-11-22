@@ -41,6 +41,8 @@ AppAsset::register($this);
         $navItems[] = ['label' => 'Sign Up', 'url' => ['/user/register']];
     }
     else{
+        $navItems[] = ['label' => 'Написать в тех. поддержку', 'url' => ['/messages/create']];
+        $navItems[] = ['label' => 'Список обращений', 'url' => ['/messages/index']];
         $navItems[] = ['label' => 'Logout (' . Yii::$app->user->identity->username . ')',
             'url' => ['/site/logout'],
             'linkOptions' => ['data-method' => 'post']
